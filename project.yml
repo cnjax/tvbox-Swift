@@ -104,6 +104,8 @@ targets:
       - path: tvbox
         excludes:
           - Info.plist
+      - path: SpiderBridge
+        type: folder
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.tvbox.app.macos

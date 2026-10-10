@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5B1D6E2A9C3F4A7B8E0D1C22 /* SpiderBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B1D6E2A9C3F4A7B8E0D1C21 /* SpiderBridge.swift */; };
+		5B1D6E2A9C3F4A7B8E0D1C23 /* SpiderBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B1D6E2A9C3F4A7B8E0D1C21 /* SpiderBridge.swift */; };
+		5B1D6E2A9C3F4A7B8E0D1C25 /* SpiderBridge in Resources */ = {isa = PBXBuildFile; fileRef = 5B1D6E2A9C3F4A7B8E0D1C24 /* SpiderBridge */; };
 		00DC0B0A8D261A9015CE9308 /* PlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB87D0D74C7CB27B06EBBC4A /* PlayerView.swift */; };
 		01259DBB84CEFA52CB5BC8C1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F4341B27BB1A860CB183467 /* ContentView.swift */; };
 		020C5667E8D08A0C9B03EC8E /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10969CAA236B75C35062BCE /* SettingsView.swift */; };
@@ -115,6 +118,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5B1D6E2A9C3F4A7B8E0D1C21 /* SpiderBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpiderBridge.swift; sourceTree = "<group>"; };
+		5B1D6E2A9C3F4A7B8E0D1C24 /* SpiderBridge */ = {isa = PBXFileReference; lastKnownFileType = folder; path = SpiderBridge; sourceTree = "<group>"; };
 		016DC7547EE0DE345E510288 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		0212ABEA698460948737CABE /* MovieSort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieSort.swift; sourceTree = "<group>"; };
 		06CD8B07440DBB1EF2807795 /* FavoritesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavoritesView.swift; sourceTree = "<group>"; };
@@ -211,6 +216,7 @@
 				D1006DD8209F63DC3AC3C718 /* NetworkManager.swift */,
 				7752B731B0A015EB4B85BFB1 /* NetworkMonitor.swift */,
 				D5DFDD8C597739AD4B443C03 /* SourceService.swift */,
+				5B1D6E2A9C3F4A7B8E0D1C21 /* SpiderBridge.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -297,6 +303,7 @@
 			isa = PBXGroup;
 			children = (
 				8B5798117EA20DF680EFD3CA /* tvbox */,
+				5B1D6E2A9C3F4A7B8E0D1C24 /* SpiderBridge */,
 				0F55DB9D84FD47BF11F99DE5 /* tvbox-Tests */,
 				2CDB960D512B40AF659C0811 /* tvboxTests */,
 				AF26E3B8CC541C336E1ECDDB /* Products */,
@@ -546,6 +553,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C95C692E1A80145DED49DD3 /* Assets.xcassets in Resources */,
+				5B1D6E2A9C3F4A7B8E0D1C25 /* SpiderBridge in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -612,6 +620,7 @@
 				80886C0A593DE429B8A62C4C /* SettingsViewModel.swift in Sources */,
 				17BAC049400FFF5487ECD23B /* SourceBean.swift in Sources */,
 				49FCE735A7CD8228369E3824 /* SourceService.swift in Sources */,
+				5B1D6E2A9C3F4A7B8E0D1C22 /* SpiderBridge.swift in Sources */,
 				85094ADB7683C758B5F5F835 /* VLCPlayerView.swift in Sources */,
 				205509C747774AFBAB4F9645 /* VodCardView.swift in Sources */,
 				BB36351815C53AC6EACB475A /* VodInfo.swift in Sources */,
@@ -657,6 +666,7 @@
 				4C4402D4594D06EA9D76960A /* SettingsViewModel.swift in Sources */,
 				C13E02E9A6451F57D21590A3 /* SourceBean.swift in Sources */,
 				2AAA54BEC34D9A528B2208ED /* SourceService.swift in Sources */,
+				5B1D6E2A9C3F4A7B8E0D1C23 /* SpiderBridge.swift in Sources */,
 				B271873FE89F02840EAC6975 /* VLCPlayerView.swift in Sources */,
 				217BB4F40B9348F439749C70 /* VodCardView.swift in Sources */,
 				74D54978A79B511FDE79524D /* VodInfo.swift in Sources */,

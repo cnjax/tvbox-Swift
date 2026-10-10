@@ -580,16 +580,29 @@ class ApiConfig: ObservableObject {
             var sources: [SourceBean] = []
             if let sites = config.sites {
                 for site in sites {
+                    let type = site.type?.value ?? 1
+                    var api = (site.api ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                    var ext = site.ext?.stringValue
+                    var jar: String?
+                    if type == 3 {
+                        // 爬虫脚本/ext/jar 常用 ./ 相对路径，相对配置地址解析；jar 可能带 ;md5;xxx 后缀
+                        if !api.hasPrefix("csp_") { api = resolveConfigUrl(api, baseConfigUrl: apiUrl) }
+                        if let e = ext, e.hasPrefix("./") || e.hasPrefix("../") { ext = resolveConfigUrl(e, baseConfigUrl: apiUrl) }
+                        if let spider = (site.jar ?? config.spider)?.components(separatedBy: ";").first, !spider.isEmpty {
+                            jar = resolveConfigUrl(spider, baseConfigUrl: apiUrl)
+                        }
+                    }
                     let bean = SourceBean(
                         key: site.key ?? UUID().uuidString,
                         name: site.name ?? "未命名",
-                        api: site.api ?? "",
+                        api: api,
                         searchable: site.searchable?.value ?? 1,
                         filterable: site.filterable?.value ?? 1,
                         quickSearch: site.quickSearch?.value ?? 0,
                         playerType: site.playerType?.value ?? 0,
-                        type: site.type?.value ?? 1,
-                        ext: site.ext?.stringValue
+                        type: type,
+                        ext: ext,
+                        jar: jar
                     )
                     sources.append(bean)
                 }
@@ -601,7 +614,7 @@ class ApiConfig: ObservableObject {
                let found = sources.first(where: { $0.key == saved }) {
                 self.homeSourceBean = found
             } else {
-                // 优先选择支持的源（type 0/1/4），跳过 type=3 (JAR)
+                // 优先选择当前平台支持的源
                 self.homeSourceBean = sources.first(where: { $0.isSupportedInSwift }) ?? sources.first
             }
             
@@ -653,7 +666,7 @@ class ApiConfig: ObservableObject {
             
             // 如果有 url，从远程加载
             if let liveUrl = live.url, !liveUrl.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                let resolvedUrl = resolveLiveUrl(liveUrl, baseConfigUrl: apiUrl)
+                let resolvedUrl = resolveConfigUrl(liveUrl, baseConfigUrl: apiUrl)
                 remoteLiveTargets.append((order: index, url: resolvedUrl))
             }
             
@@ -869,7 +882,7 @@ class ApiConfig: ObservableObject {
             }
     }
     
-    private func resolveLiveUrl(_ urlString: String, baseConfigUrl: String) -> String {
+    private func resolveConfigUrl(_ urlString: String, baseConfigUrl: String) -> String {
         let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmed.isEmpty else { return trimmed }
         if let url = URL(string: trimmed), url.scheme != nil {

@@ -12,13 +12,13 @@ class SourceService {
     // MARK: - 获取分类列表
     
     /// 获取指定源的分类列表和首页推荐
-    func getSort(sourceBean: SourceBean) async throws -> (sorts: [MovieSort.SortData], homeVideos: [Movie.Video]) {
+    func getSort(sourceBean source: SourceBean) async throws -> (sorts: [MovieSort.SortData], homeVideos: [Movie.Video]) {
+        let sourceBean = try await SpiderBridge.shared.remoteSource(for: source)
         let api = sourceBean.api
         guard !api.isEmpty else {
             throw SourceError.emptyApi
         }
         
-        // type=3 (JAR/Spider) 暂不支持
         guard sourceBean.isSupportedInSwift else {
             throw SourceError.unsupportedType(sourceBean.typeDescription)
         }
@@ -163,7 +163,8 @@ class SourceService {
     // MARK: - 获取分类视频列表
     
     /// 获取分类下的视频列表
-    func getList(sourceBean: SourceBean, sortData: MovieSort.SortData, page: Int = 1, filters: [String: String]? = nil) async throws -> [Movie.Video] {
+    func getList(sourceBean source: SourceBean, sortData: MovieSort.SortData, page: Int = 1, filters: [String: String]? = nil) async throws -> [Movie.Video] {
+        let sourceBean = try await SpiderBridge.shared.remoteSource(for: source)
         let api = sourceBean.api
         guard !api.isEmpty else { throw SourceError.emptyApi }
         guard sourceBean.isSupportedInSwift else { throw SourceError.unsupportedType(sourceBean.typeDescription) }
@@ -279,7 +280,8 @@ class SourceService {
     // MARK: - 获取详情
     
     /// 获取视频详情
-    func getDetail(sourceBean: SourceBean, vodId: String) async throws -> VodInfo? {
+    func getDetail(sourceBean source: SourceBean, vodId: String) async throws -> VodInfo? {
+        let sourceBean = try await SpiderBridge.shared.remoteSource(for: source)
         let api = sourceBean.api
         guard !api.isEmpty else { throw SourceError.emptyApi }
         guard sourceBean.isSupportedInSwift else { throw SourceError.unsupportedType(sourceBean.typeDescription) }
@@ -355,7 +357,8 @@ class SourceService {
     // MARK: - 搜索
     
     /// 在指定源中搜索
-    func search(sourceBean: SourceBean, keyword: String) async throws -> [Movie.Video] {
+    func search(sourceBean source: SourceBean, keyword: String) async throws -> [Movie.Video] {
+        let sourceBean = try await SpiderBridge.shared.remoteSource(for: source)
         let api = sourceBean.api
         guard !api.isEmpty else { throw SourceError.emptyApi }
         guard sourceBean.isSupportedInSwift else { throw SourceError.unsupportedType(sourceBean.typeDescription) }
@@ -404,7 +407,7 @@ class SourceService {
         return await withTaskGroup(of: [Movie.Video].self) { group in
             for source in sources {
                 // 跳过不支持的源类型
-                guard source.isSupportedInSwift && source.isHttpApi else { continue }
+                guard source.isSupportedInSwift && (source.isHttpApi || source.type == 3) else { continue }
                 
                 group.addTask { [self] in
                     do {
