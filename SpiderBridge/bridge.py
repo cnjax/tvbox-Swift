@@ -439,10 +439,24 @@ class Handler(BaseHTTPRequestHandler):
     def send(self, code, body=b'', ctype='application/json; charset=utf-8', headers=None):
         if isinstance(body, str):
             body = body.encode('utf-8')
+        headers = dict(headers or {})
+        # AVPlayer refuses mp4 over HTTP without byte-range support ("Operation Stopped").
+        rng = self.headers.get('Range', '') if code == 200 and body else ''
+        if rng.startswith('bytes=') and ',' not in rng:
+            first, _, last = rng[6:].strip().partition('-')
+            n = len(body)
+            start = int(first) if first else max(n - int(last or 0), 0)
+            end = min(int(last), n - 1) if first and last else n - 1
+            if start >= n or start > end:
+                code, body, headers = 416, b'', {'Content-Range': f'bytes */{n}'}
+            else:
+                code, body = 206, body[start:end + 1]
+                headers['Content-Range'] = f'bytes {start}-{end}/{n}'
+            headers['Accept-Ranges'] = 'bytes'
         self.send_response(code)
         self.send_header('Content-Type', ctype)
         self.send_header('Content-Length', str(len(body)))
-        for k, v in (headers or {}).items():
+        for k, v in headers.items():
             self.send_header(k, v)
         self.end_headers()
         if self.command != 'HEAD':
@@ -464,6 +478,8 @@ class Handler(BaseHTTPRequestHandler):
             if url.path == '/proxy':
                 return self.proxy(q)
             self.send(404, '{}')
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # player cancelled the request
         except Exception as e:
             traceback.print_exc()
             self.send(500, json.dumps({'error': str(e)}, ensure_ascii=False))
