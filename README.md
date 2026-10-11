@@ -18,7 +18,7 @@
 - 🧩 **全方位的媒体功能栈 (Media Stack)**
   - **点播中心 (VOD Center):** 整合了智能资源检索、卡片化视觉呈现与多级详情页。
     - *生态支持:* 原生支持解析主流的 CMS JSON/XML 数据源接口 (`type=0`, `type=1`)。
-    - *暂不支持:* 由于 iOS/macOS 平台原生限制与环境安全，内核未集成基于 Java 引擎或 Rhino 逻辑层，**不支持** `type=3` (Spider / Jar) 等依赖动态脚本执行的复杂爬虫源。
+    - *爬虫源:* macOS 版通过本地 SpiderBridge 支持 `type=3` (py / js / jar) 爬虫源，需本机安装运行环境，见 [macOS 爬虫源运行环境](#-macos-爬虫源运行环境-type3)；iOS 版不支持。
   - **直播支持 (Live):** 稳定的流媒体播放基础构件支持。
   - **内容枢纽 (Content Hub):** 便捷的搜索、智能历史记录流、一键收藏管理。
 - ⚙️ **健壮的业务底层 (Robust Foundation)**
@@ -40,7 +40,7 @@
 
 1. **源类型支持范围不同**
    - Swift 版支持 `type=0/1/4`（XML/JSON/Remote）。
-   - Swift 版暂不支持 `type=3 (JAR/Spider)` 动态脚本源。
+   - `type=3`（py/js/jar 爬虫）仅 macOS 版支持，依赖本机 Python / Node.js / JDK；iOS 版不支持。
 2. **配置兼容能力不同**
    - 安卓版支持加密配置解密、`clan://`、相对路径修复、独立直播配置加载等。
    - Swift 版当前为常规 URL 拉取 + 注释容错解析。
@@ -125,7 +125,35 @@ chmod +x package_mac.sh
 ./package_mac.sh
 ```
 
-> **成功输出提示:** `✅ 打包完成！生成文件: TVBox-macOS.dmg`
+> **成功输出提示:** `✅ 打包完成！生成文件: TVBox-macOS-arm64.dmg, TVBox-macOS-x86_64.dmg`
+
+## 🕷 macOS 爬虫源运行环境 (type=3)
+
+macOS 版内置 `SpiderBridge`，在本机运行 py / js / jar 爬虫源。App 不自带解释器，需按用到的源类型安装：
+
+| 源类型 | 需要 | 安装 |
+|---|---|---|
+| 全部（必需） | Python 3.8+ | `brew install python` |
+| js 源 | Node.js 18+ | `brew install node` |
+| jar 源 | JDK 11+（需 `javac`，仅 JRE 不行） | 见下方 |
+
+```bash
+brew install python node openjdk
+# brew 的 openjdk 不会自动注册到系统，需链接一次
+sudo ln -sfn "$(brew --prefix openjdk)/libexec/openjdk.jdk" /Library/Java/JavaVirtualMachines/openjdk.jdk
+```
+
+首次使用对应类型的源时会**联网自动下载**以下依赖（存放于 `~/Library/Application Support/TVBox/spider/`），之后离线可用：
+
+- **py**：创建 venv 并 `pip install requests lxml pycryptodome pyquery beautifulsoup4 cryptography`（首次约 1 分钟）
+- **js**：`npm install crypto-js`
+- **jar**：从 Maven Central 下载 okhttp / okio / gson / org.json，从 GitHub 下载 dex2jar
+
+注意：
+
+- 首次需能访问 PyPI、npm、Maven Central、GitHub；网络受限时可配置 pip/npm 镜像或系统代理。
+- 某个 py 源用到上述以外的包时，手动安装：`~/Library/Application\ Support/TVBox/spider/venv/bin/pip install <包名>`
+- 环境异常时删除 `~/Library/Application Support/TVBox/spider/` 后重启 App，会重新初始化。
 
 ---
 
